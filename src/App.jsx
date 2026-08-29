@@ -202,7 +202,7 @@ export default function App() {
             <h2 style={{ fontSize: "2rem", margin: "0.5rem 0 1.5rem" }}>The Sky Tuition Classes</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem", color: "#cbd5e1", fontSize: "0.95rem" }}>
               <div>👤 <strong>Director:</strong> Saqib Vidha</div>
-              <div>📞 <strong>Phone:</strong> <a href="tel:7567277723" style={{ color: "#00b4d8", textDecoration: "none" }}>+91 75672 77723</a></div>
+              <div>📞 <strong>Phone:</strong> <a href="tel:7203823108" style={{ color: "#00b4d8", textDecoration: "none" }}>+91 75672 77723</a></div>
               <div>✉️ <strong>Email:</strong> theskytuitionclasses@gmail.com</div>
               <div>📍 <strong>Location:</strong> Nr. Collector Office, Opp. Kohinoor Apartment, Sardarbag, Junagadh 362001</div>
               <div>⏰ <strong>Timings:</strong> Mon – Sat: 5:30 PM – 8:00 PM</div>
