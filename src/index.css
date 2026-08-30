@@ -7,6 +7,10 @@
 html, body, #root {
   width: 100%;
   min-height: 100%;
-  background-color: #061224;
+  background-color: #040d1a;
   color: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
 }
