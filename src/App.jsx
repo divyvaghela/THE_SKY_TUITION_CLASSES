@@ -5,19 +5,22 @@ const TOTAL_FRAMES = 60;
 const FOLDER_PATH = "/frames";
 
 const TOPPERS = [
-  { name: "Mustafa Jethva", score: "95.67%", grade: "A1", desc: "Top Board Scorer", icon: "🏆" },
-  { name: "Arman Malek", score: "95.22%", grade: "A1", desc: "Mathematics Star", icon: "🥇" },
-  { name: "Alveera Khan Turk", score: "94.00%", grade: "A1", desc: "Academic Excellence", icon: "🌟" },
-  { name: "Ayan Sameja", score: "92.33%", grade: "A1", desc: "High Achiever", icon: "⭐" },
-  { name: "Aayesha Aziz", score: "88.47%", grade: "A2", desc: "Science Distinction", icon: "🎖️" },
-  { name: "Mo. Faiz Khatri", score: "88.30%", grade: "A2", desc: "Language Mastery", icon: "🎖️" },
-  { name: "Rehan Motiwala", score: "84.56%", grade: "A2", desc: "Consistent Performer", icon: "🎖️" },
-  { name: "Ammar Motiwala", score: "83.89%", grade: "A2", desc: "Concept Master", icon: "🎖️" },
-  { name: "Mo. Shabir Shoharvardi", score: "80.42%", grade: "A2", desc: "Analytical Mind", icon: "🎖️" },
-  { name: "Vali Shah Khan", score: "80.00%", grade: "A2", desc: "Dedicated Scholar", icon: "🎖️" },
-  { name: "Arsh Rinbloch", score: "68.71%", grade: "B2", desc: "Commerce Achiever", icon: "🏅" },
-  { name: "Anzar Khan Turk", score: "68.29%", grade: "B2", desc: "Board Achiever", icon: "🏅" },
-  { name: "Mohammad Bhata", score: "67.84%", grade: "B2", desc: "Board Achiever", icon: "🏅" },
+  // 🌟 A1 & A2 Grade Achievers
+  { name: "Jethva Mustufa", score: "95.67%", grade: "A1", desc: "Top Board Scorer", icon: "🏆", image: "/students/mustafa.jpg" },
+  { name: "Malek Arman", score: "95.22%", grade: "A1", desc: "Mathematics Star", icon: "🥇", image: "/students/arman.jpg" },
+  { name: "Turk Alveera Khan", score: "94.00%", grade: "A1", desc: "Academic Excellence", icon: "🌟", image: "/students/alveera.jpg" },
+  { name: "Sameja Ayan", score: "92.33%", grade: "A1", desc: "High Achiever", icon: "⭐", image: "/students/ayan.jpg" },
+  { name: "Aziz Aayesha", score: "88.47%", grade: "A2", desc: "Science Distinction", icon: "🎖️", image: "" },
+  { name: "Khatri Faiz", score: "88.30%", grade: "A2", desc: "Language Mastery", icon: "🎖️", image: "" },
+  { name: "Motiwala Rehan", score: "84.56%", grade: "A2", desc: "Consistent Performer", icon: "🎖️", image: "/students/rehan.jpg" },
+  { name: "Motiwala Ammar", score: "83.89%", grade: "A2", desc: "Concept Master", icon: "🎖️", image: "/students/ammar.jpg" },
+  { name: "Shoharvardi Sabir", score: "80.42%", grade: "A2", desc: "Analytical Mind", icon: "🎖️", image: "/students/shabir.jpg" },
+  { name: "Shah Vali", score: "80.00%", grade: "A2", desc: "Dedicated Scholar", icon: "🎖️", image: "/students/vali.jpg" },
+
+  // 🎯 B2 Grade Achievers
+  { name: "Rinbloch Arsh", score: "68.71%", grade: "B2", desc: "Commerce Achiever", icon: "🏅", image: "/students/arsh.jpg" },
+  { name: "Turk Anzar Khan", score: "68.29%", grade: "B2", desc: "Board Achiever", icon: "🏅", image: "/students/anzar.jpg" },
+  { name: "Bhata Mohammad", score: "67.88%", grade: "B2", desc: "Board Achiever", icon: "🏅", image: "/students/mohammad.jpg" },
 ];
 
 const FACULTY = [
@@ -383,7 +386,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Board Achievements & Toppers Wall (No Individual Photos Needed) */}
+      {/* Board Achievements & Toppers Wall with Student Photos */}
       <section id="results" style={{ padding: "5rem 6%", background: "#030b17" }}>
         <div style={{ maxWidth: "1200px", margin: "auto" }}>
           
@@ -440,28 +443,62 @@ export default function App() {
                 }}>
                   {topper.grade} Grade
                 </div>
+{/* Circular Photo Frame with Fallback Monogram */}
+<div style={{
+  width: "80px",
+  height: "80px",
+  borderRadius: "50%",
+  padding: "3px",
+  background: topper.grade === "A1"
+    ? "linear-gradient(135deg, #d97706, #f59e0b)"
+    : "linear-gradient(135deg, #0284c7, #00b4d8)",
+  boxShadow: topper.grade === "A1"
+    ? "0 4px 15px rgba(245, 158, 11, 0.35)"
+    : "0 4px 15px rgba(0, 180, 216, 0.35)",
+  marginBottom: "0.8rem"
+}}>
+  <div style={{
+    width: "100%",
+    height: "100%",
+    borderRadius: "50%",
+    overflow: "hidden",
+    background: "#030b17",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  }}>
+    {/* 🖼️ તમારો Image કોડ અહીં આવશે */}
+    {topper.image ? (
+      <img
+        src={topper.image}
+        alt={topper.name}
+        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
+        onError={(e) => {
+          if (e.target.src.endsWith(".jpg")) {
+            e.target.src = e.target.src.replace(".jpg", ".jpeg");
+          } else {
+            e.target.style.display = "none";
+            if (e.target.nextSibling) e.target.nextSibling.style.display = "flex";
+          }
+        }}
+      />
+    ) : null}
 
-                {/* Royal Monogram Avatar Badge */}
-                <div style={{
-                  width: "70px",
-                  height: "70px",
-                  borderRadius: "50%",
-                  background: topper.grade === "A1"
-                    ? "linear-gradient(135deg, #d97706, #f59e0b)"
-                    : "linear-gradient(135deg, #0284c7, #00b4d8)",
-                  color: "#ffffff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "1.5rem",
-                  fontWeight: 800,
-                  marginBottom: "0.8rem",
-                  boxShadow: topper.grade === "A1"
-                    ? "0 4px 15px rgba(245, 158, 11, 0.35)"
-                    : "0 4px 15px rgba(0, 180, 216, 0.35)"
-                }}>
-                  {topper.name.charAt(0)}
-                </div>
+    {/* જો ફોટો ન હોય તો પહેલો અક્ષર દેખાડવા માટે */}
+    <div style={{
+      display: topper.image ? "none" : "flex",
+      width: "100%",
+      height: "100%",
+      alignItems: "center",
+      justifyContent: "center",
+      color: "#fff",
+      fontSize: "1.6rem",
+      fontWeight: 800
+    }}>
+      {topper.name.charAt(0)}
+    </div>
+  </div>
+</div>
 
                 <h4 style={{ color: "#fff", fontSize: "1.05rem", margin: "0.2rem 0" }}>{topper.name}</h4>
                 <div style={{ color: topper.grade === "A1" ? "#f59e0b" : "#00b4d8", fontSize: "1.45rem", fontWeight: 800, margin: "0.2rem 0" }}>
@@ -500,7 +537,7 @@ export default function App() {
               <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginTop: "4px" }}>Std. 5 to 10 (All Subjects) & Std. 11-12 Commerce</p>
             </div>
 
-            {/* Toppers Hoarding Banner (Shows all student photos here) */}
+            {/* Toppers Hoarding Banner */}
             <div className="glass-card" style={{ padding: "1.2rem", overflow: "hidden" }}>
               <img
                 src="/banner-toppers.jpg"
