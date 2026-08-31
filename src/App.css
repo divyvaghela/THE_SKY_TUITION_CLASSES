@@ -119,3 +119,25 @@ body {
     gap: 10px;
   }
 }
+
+/* Mobile & Tablet Safe Navbar */
+@media (max-width: 900px) {
+  nav {
+    padding: 0.6rem 1rem !important;
+  }
+  
+  /* Hide text links on mobile */
+  nav .nav-links a:not(.btn-gold) {
+    display: none !important;
+  }
+
+  /* Make logo and title compact */
+  nav img {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  nav span.brand-title {
+    font-size: 0.95rem !important;
+  }
+}

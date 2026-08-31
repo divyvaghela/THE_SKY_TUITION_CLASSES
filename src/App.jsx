@@ -75,6 +75,21 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadProgress, setLoadProgress] = useState(0);
 
+  // Smooth Scroll Handler
+  const scrollToSection = (e, id) => {
+    if (e) e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+      const navHeight = 70;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - navHeight;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+  };
+
   const getFrameSrc = (index) => {
     const pad = String(index).padStart(3, "0");
     return `${FOLDER_PATH}/ezgif-frame-${pad}.jpg`;
@@ -228,92 +243,43 @@ export default function App() {
           <span style={{ fontSize: "0.85rem", marginTop: "0.8rem", color: "#94a3b8" }}>Loading Experience {loadProgress}%</span>
         </div>
       )}
-{/* Fixed Navbar with proper Spacing & Smooth Navigation */}
-<nav style={{
-  position: "fixed",
-  top: 0,
-  left: 0,
-  width: "100%",
-  padding: "0.75rem 2rem",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  zIndex: 1000,
-  background: "rgba(3, 11, 23, 0.95)",
-  backdropFilter: "blur(14px)",
-  borderBottom: "1px solid rgba(0, 180, 216, 0.25)",
-  boxShadow: "0 4px 20px rgba(0,0,0,0.5)"
-}}>
-  {/* Logo & Brand Name (No Overlapping) */}
-{/* Left Brand Identity: THE SKY TUITION CLASSES on One Line */}
-<div style={{ display: "flex", alignItems: "center", gap: "12px", minWidth: "fit-content" }}>
-  <img
-    src="/logo.png"
-    alt="Logo"
-    onError={(e) => { e.target.style.display = 'none'; }}
-    style={{
-      width: "42px",
-      height: "42px",
-      borderRadius: "50%",
-      objectFit: "cover",
-      border: "2px solid #00b4d8",
-      flexShrink: 0
-    }}
-  />
-  <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-    
-    {/* Line 1: Main Title + Badge */}
-    <div style={{ display: "flex", alignItems: "center", gap: "8px", lineHeight: "1.2" }}>
-      <span style={{ fontWeight: 800, fontSize: "1.1rem", letterSpacing: "0.8px", color: "#ffffff", whiteSpace: "nowrap" }}>
-        THE <span style={{ color: "#00d2ff" }}>SKY</span> TUITION CLASSES
-      </span>
- 
-    </div>
 
-    {/* Line 2: Tagline Directly Below */}
-    <div style={{ fontSize: "0.65rem", letterSpacing: "1.5px", color: "#f59e0b", fontWeight: 700, marginTop: "2px" }}>
-      "TIME TO SHINE"
-    </div>
+      {/* Fixed Navbar with proper Spacing & Smooth Navigation */}
+      <nav style={{
+        position: "fixed", top: 0, left: 0, width: "100%", padding: "0.75rem 2rem",
+        display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 1000,
+        background: "rgba(3, 11, 23, 0.95)", backdropFilter: "blur(14px)",
+        borderBottom: "1px solid rgba(0, 180, 216, 0.25)"
+      }}>
+        {/* Logo & Title */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <img
+            src="/logo.png"
+            alt="Logo"
+            style={{ width: "40px", height: "40px", borderRadius: "50%", flexShrink: 0, border: "1.5px solid #00b4d8" }}
+          />
+          <div>
+            <span className="brand-title" style={{ fontWeight: 800, fontSize: "1.1rem", color: "#ffffff", whiteSpace: "nowrap" }}>
+              THE <span style={{ color: "#00d2ff" }}>SKY</span> TUITION CLASSES
+            </span>
+            <div style={{ fontSize: "0.6rem", letterSpacing: "1.2px", color: "#f59e0b", fontWeight: 700 }}>
+              "TIME TO SHINE"
+            </div>
+          </div>
+        </div>
 
-  </div>
-</div>
-
-  {/* Navigation Links with Safe Right Margin */}
-  <div style={{ display: "flex", alignItems: "center", gap: "1.4rem" }}>
-    {["results", "courses", "gallery", "faculty", "vacation"].map((sec) => (
-      <a
-        key={sec}
-        href={`#${sec}`}
-        onClick={(e) => {
-          e.preventDefault();
-          const target = document.getElementById(sec);
-          if (target) {
-            const offset = 75;
-            const bodyRect = document.body.getBoundingClientRect().top;
-            const elementRect = target.getBoundingClientRect().top;
-            const elementPosition = elementRect - bodyRect;
-            window.scrollTo({ top: elementPosition - offset, behavior: "smooth" });
-          }
-        }}
-        style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.9rem", fontWeight: 600, textTransform: "capitalize" }}
-      >
-        {sec === "vacation" ? "Vacation Camp" : sec}
-      </a>
-    ))}
-
-    <a
-      href="#register"
-      onClick={(e) => {
-        e.preventDefault();
-        document.getElementById("register")?.scrollIntoView({ behavior: "smooth" });
-      }}
-      className="btn-gold"
-      style={{ padding: "0.45rem 1.2rem", fontSize: "0.85rem", whiteSpace: "nowrap" }}
-    >
-      Book Demo
-    </a>
-  </div>
-</nav>
+        {/* Responsive Nav Links */}
+        <div className="nav-links" style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
+          <a href="#results" onClick={(e) => scrollToSection(e, "results")} style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.85rem", fontWeight: 600 }}>Results</a>
+          <a href="#courses" onClick={(e) => scrollToSection(e, "courses")} style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.85rem", fontWeight: 600 }}>Courses</a>
+          <a href="#gallery" onClick={(e) => scrollToSection(e, "gallery")} style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.85rem", fontWeight: 600 }}>Gallery</a>
+          <a href="#faculty" onClick={(e) => scrollToSection(e, "faculty")} style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.85rem", fontWeight: 600 }}>Faculty</a>
+          <a href="#vacation" onClick={(e) => scrollToSection(e, "vacation")} style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.85rem", fontWeight: 600 }}>Vacation Camp</a>
+          <a href="#register" onClick={(e) => scrollToSection(e, "register")} className="btn-gold" style={{ padding: "0.4rem 1rem", fontSize: "0.8rem", whiteSpace: "nowrap" }}>
+            Book Demo
+          </a>
+        </div>
+      </nav>
 
       {/* 3D Scrollytelling Visual Canvas */}
       <div ref={trackRef} style={{ height: "400vh", position: "relative" }}>
@@ -335,7 +301,7 @@ export default function App() {
             background: "radial-gradient(circle at center, transparent 30%, rgba(3, 11, 23, 0.9) 100%)"
           }} />
 
-{/* STAGE 1 (0% - 25%): Hero Subtitle & Admission Badge */}
+          {/* STAGE 1 (0% - 25%): Hero Subtitle & Admission Badge */}
           <div style={{
             position: "absolute", inset: 0, display: "flex", flexDirection: "column",
             justifyContent: "flex-end", alignItems: "center", textAlign: "center", paddingBottom: "4.5rem",
@@ -361,37 +327,36 @@ export default function App() {
           </div>
 
           {/* STAGE 2 (25% - 50%): Concept Clarity & Mentorship */}
-{/* Optimized STAGE 2 Overlay: Placed to not block the Glowing Neon Sign */}
-<div style={{
-  position: "absolute", 
-  bottom: "12%", 
-  left: "6%", 
-  opacity: scrollProgress >= 0.25 && scrollProgress < 0.50 ? 1 : 0,
-  transition: "opacity 0.25s ease-out", 
-  maxWidth: "440px", 
-  pointerEvents: "none"
-}}>
-  <div className="glass-card" style={{ 
-    padding: "1.6rem 1.8rem", 
-    background: "rgba(3, 11, 23, 0.88)", 
-    backdropFilter: "blur(14px)", 
-    border: "1px solid rgba(0, 180, 216, 0.35)",
-    borderRadius: "16px",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.6)"
-  }}>
-    <span style={{ color: "#00d2ff", fontSize: "0.75rem", fontWeight: 800, letterSpacing: "1.2px" }}>
-      DEEP CONCEPT CLARITY
-    </span>
-    <h2 style={{ fontSize: "1.5rem", margin: "0.3rem 0 0.6rem", color: "#ffffff" }}>
-      Personalized Mentorship
-    </h2>
-    <p style={{ color: "#cbd5e1", fontSize: "0.9rem", lineHeight: "1.5" }}>
-      Direct guidance under Director <strong>Saqib Vidha Sir</strong> to eliminate exam anxiety and build rock-solid subject fundamentals.
-    </p>
-  </div>
-</div>
+          <div style={{
+            position: "absolute", 
+            bottom: "12%", 
+            left: "6%", 
+            opacity: scrollProgress >= 0.25 && scrollProgress < 0.50 ? 1 : 0,
+            transition: "opacity 0.25s ease-out", 
+            maxWidth: "440px", 
+            pointerEvents: "none"
+          }}>
+            <div className="glass-card" style={{ 
+              padding: "1.6rem 1.8rem", 
+              background: "rgba(3, 11, 23, 0.88)", 
+              backdropFilter: "blur(14px)", 
+              border: "1px solid rgba(0, 180, 216, 0.35)",
+              borderRadius: "16px",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.6)"
+            }}>
+              <span style={{ color: "#00d2ff", fontSize: "0.75rem", fontWeight: 800, letterSpacing: "1.2px" }}>
+                DEEP CONCEPT CLARITY
+              </span>
+              <h2 style={{ fontSize: "1.5rem", margin: "0.3rem 0 0.6rem", color: "#ffffff" }}>
+                Personalized Mentorship
+              </h2>
+              <p style={{ color: "#cbd5e1", fontSize: "0.9rem", lineHeight: "1.5" }}>
+                Direct guidance under Director <strong>Saqib Vidha Sir</strong> to eliminate exam anxiety and build rock-solid subject fundamentals.
+              </p>
+            </div>
+          </div>
 
-          {/* STAGE 3 (50% - 78%): Live Interactive Classroom (Matched with Saqib Sir Video) */}
+          {/* STAGE 3 (50% - 78%): Live Interactive Classroom */}
           <div style={{
             position: "absolute", top: "50%", right: "6%", transform: "translateY(-50%)",
             opacity: scrollProgress >= 0.50 && scrollProgress < 0.78 ? 1 : 0,
@@ -406,7 +371,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* STAGE 4 (78% - 100%): Final Call To Action (Trophy Scene with Safe Card Overlay) */}
+          {/* STAGE 4 (78% - 100%): Final Call To Action */}
           <div style={{
             position: "absolute", inset: 0, display: "flex", flexDirection: "column",
             justifyContent: "center", alignItems: "center", textAlign: "center", padding: "1.5rem",
@@ -431,10 +396,7 @@ export default function App() {
               </p>
               <a 
                 href="#register" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById("register")?.scrollIntoView({ behavior: "smooth" });
-                }} 
+                onClick={(e) => scrollToSection(e, "register")}
                 className="btn-whatsapp" 
                 style={{ padding: "0.85rem 1.8rem", fontSize: "0.95rem" }}
               >
@@ -477,7 +439,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Board Achievements & Toppers Wall with Student Photos */}
+      {/* Board Achievements & Toppers Wall */}
       <section id="results" style={{ padding: "5rem 6%", background: "#030b17" }}>
         <div style={{ maxWidth: "1200px", margin: "auto" }}>
           
@@ -534,62 +496,60 @@ export default function App() {
                 }}>
                   {topper.grade} Grade
                 </div>
-{/* Circular Photo Frame with Fallback Monogram */}
-<div style={{
-  width: "80px",
-  height: "80px",
-  borderRadius: "50%",
-  padding: "3px",
-  background: topper.grade === "A1"
-    ? "linear-gradient(135deg, #d97706, #f59e0b)"
-    : "linear-gradient(135deg, #0284c7, #00b4d8)",
-  boxShadow: topper.grade === "A1"
-    ? "0 4px 15px rgba(245, 158, 11, 0.35)"
-    : "0 4px 15px rgba(0, 180, 216, 0.35)",
-  marginBottom: "0.8rem"
-}}>
-  <div style={{
-    width: "100%",
-    height: "100%",
-    borderRadius: "50%",
-    overflow: "hidden",
-    background: "#030b17",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-  }}>
-    {/* 🖼️ તમારો Image કોડ અહીં આવશે */}
-    {topper.image ? (
-      <img
-        src={topper.image}
-        alt={topper.name}
-        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
-        onError={(e) => {
-          if (e.target.src.endsWith(".jpg")) {
-            e.target.src = e.target.src.replace(".jpg", ".jpeg");
-          } else {
-            e.target.style.display = "none";
-            if (e.target.nextSibling) e.target.nextSibling.style.display = "flex";
-          }
-        }}
-      />
-    ) : null}
 
-    {/* જો ફોટો ન હોય તો પહેલો અક્ષર દેખાડવા માટે */}
-    <div style={{
-      display: topper.image ? "none" : "flex",
-      width: "100%",
-      height: "100%",
-      alignItems: "center",
-      justifyContent: "center",
-      color: "#fff",
-      fontSize: "1.6rem",
-      fontWeight: 800
-    }}>
-      {topper.name.charAt(0)}
-    </div>{/* Official Banners & Pamphlet Gallery Section */}``
-  </div>
-</div>
+                <div style={{
+                  width: "80px",
+                  height: "80px",
+                  borderRadius: "50%",
+                  padding: "3px",
+                  background: topper.grade === "A1"
+                    ? "linear-gradient(135deg, #d97706, #f59e0b)"
+                    : "linear-gradient(135deg, #0284c7, #00b4d8)",
+                  boxShadow: topper.grade === "A1"
+                    ? "0 4px 15px rgba(245, 158, 11, 0.35)"
+                    : "0 4px 15px rgba(0, 180, 216, 0.35)",
+                  marginBottom: "0.8rem"
+                }}>
+                  <div style={{
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    background: "#030b17",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}>
+                    {topper.image ? (
+                      <img
+                        src={topper.image}
+                        alt={topper.name}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
+                        onError={(e) => {
+                          if (e.target.src.endsWith(".jpg")) {
+                            e.target.src = e.target.src.replace(".jpg", ".jpeg");
+                          } else {
+                            e.target.style.display = "none";
+                            if (e.target.nextSibling) e.target.nextSibling.style.display = "flex";
+                          }
+                        }}
+                      />
+                    ) : null}
+
+                    <div style={{
+                      display: topper.image ? "none" : "flex",
+                      width: "100%",
+                      height: "100%",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#fff",
+                      fontSize: "1.6rem",
+                      fontWeight: 800
+                    }}>
+                      {topper.name.charAt(0)}
+                    </div>
+                  </div>
+                </div>
 
                 <h4 style={{ color: "#fff", fontSize: "1.05rem", margin: "0.2rem 0" }}>{topper.name}</h4>
                 <div style={{ color: topper.grade === "A1" ? "#f59e0b" : "#00b4d8", fontSize: "1.45rem", fontWeight: 800, margin: "0.2rem 0" }}>
@@ -602,7 +562,7 @@ export default function App() {
         </div>
       </section>
 
-     {/* Official Banners & Pamphlet Gallery Section */}
+      {/* Official Banners & Pamphlet Gallery Section */}
       <section id="gallery" style={{ padding: "5rem 6%", background: "#051329" }}>
         <div style={{ maxWidth: "1200px", margin: "auto" }}>
           
@@ -614,7 +574,6 @@ export default function App() {
             <p style={{ color: "#94a3b8" }}>Official posters, hoardings, and academic materials of The Sky Tuition Classes</p>
           </div>
 
-          {/* Large Toppers Banner (Full Width Banner - No Crop) */}
           <div className="glass-card" style={{ padding: "1.5rem", marginBottom: "2rem", overflow: "hidden" }}>
             <div style={{ width: "100%", background: "#020914", borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(0, 180, 216, 0.3)", display: "flex", justifyContent: "center", alignItems: "center", padding: "10px" }}>
               <img
@@ -635,10 +594,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* 2-Column Grid for Poster & Visiting Card (No Crop) */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "2rem" }}>
-            
-            {/* Admission Poster */}
             <div className="glass-card" style={{ padding: "1.5rem" }}>
               <div style={{ width: "100%", height: "360px", background: "#020914", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", border: "1px solid rgba(0, 180, 216, 0.2)" }}>
                 <img
@@ -652,7 +608,6 @@ export default function App() {
               <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginTop: "4px" }}>Std. 5 to 10 (All Subjects) & Std. 11-12 Commerce</p>
             </div>
 
-            {/* Visiting Card */}
             <div className="glass-card" style={{ padding: "1.5rem" }}>
               <div style={{ width: "100%", height: "360px", background: "#020914", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", border: "1px solid rgba(0, 180, 216, 0.2)" }}>
                 <img
@@ -665,7 +620,6 @@ export default function App() {
               <h4 style={{ marginTop: "1rem", color: "#fff", fontSize: "1.1rem" }}>Director Visiting Card</h4>
               <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginTop: "4px" }}>Saqib Vidha (BBA) • Contact & Branch Location</p>
             </div>
-
           </div>
 
         </div>
@@ -711,7 +665,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Value Features */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.2rem" }}>
             {[
               { icon: "🎁", title: "Free Academic Demos", desc: "Experience interactive lectures before enrollment" },
@@ -767,7 +720,7 @@ export default function App() {
               <p style={{ color: "#cbd5e1", fontSize: "0.95rem", lineHeight: "1.6", marginBottom: "1.5rem" }}>
                 Dedicated to mentoring students in Mathematics and Commerce with concept-driven clarity. Leading The Sky Tuition Classes to deliver academic discipline, structured assessment, and overall personal growth.
               </p>
-              <a href="tel:7567277723" className="btn-primary">
+              <a href="tel:+917567277723" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
                 📞 Connect: +91 75672 77723
               </a>
             </div>
@@ -790,7 +743,7 @@ export default function App() {
                   {f.subject}
                 </div>
                 <div>
-                  <a href={`tel:${f.phone}`} style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.95rem", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <a href={`tel:+91${f.phone}`} style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.95rem", display: "flex", alignItems: "center", gap: "6px" }}>
                     📞 +91 {f.phone.slice(0, 5)} {f.phone.slice(5)}
                   </a>
                 </div>
@@ -915,7 +868,6 @@ export default function App() {
               <button onClick={() => setShowRulesModal(false)} style={{ background: "none", border: "none", color: "#94a3b8", fontSize: "1.5rem", cursor: "pointer" }}>✕</button>
             </div>
             
-            {/* Modal Rule Search */}
             <div style={{ padding: "1rem 2rem 0" }}>
               <input
                 type="text"
@@ -965,7 +917,7 @@ export default function App() {
             <h2 style={{ fontSize: "2.2rem", margin: "0.5rem 0 1.2rem" }}>The Sky Tuition Classes</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.9rem", color: "#cbd5e1", fontSize: "0.95rem", marginBottom: "1.5rem" }}>
               <div>👤 <strong>Director:</strong> Saqib Vidha (BBA | 5+ Years Exp.)</div>
-              <div>📞 <strong>Phone:</strong> <a href="tel:7567277723" style={{ color: "#00b4d8", textDecoration: "none" }}>+91 75672 77723</a></div>
+              <div>📞 <strong>Phone:</strong> <a href="tel:+917567277723" style={{ color: "#00b4d8", textDecoration: "none" }}>+91 75672 77723</a></div>
               <div>✉️ <strong>Email:</strong> theskytuitionclasses@gmail.com</div>
               <div>📸 <strong>Instagram:</strong> <a href="https://instagram.com" target="_blank" rel="noreferrer" style={{ color: "#38bdf8", textDecoration: "none" }}>@the sky tuition classes</a></div>
               <div>📍 <strong>Address:</strong> Nr. Collector Office, Opp. Kohinoor Apartment, Ghanchipat, Sardarbag, Junagadh 362001</div>
@@ -973,7 +925,6 @@ export default function App() {
               <div>🏢 <strong>Office / Calling Hours:</strong> 07:30 PM – 08:00 PM</div>
             </div>
 
-            {/* Google Maps Embed */}
             <div style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(0, 180, 216, 0.3)" }}>
               <iframe
                 title="Location Map"
@@ -1058,7 +1009,7 @@ export default function App() {
       {/* Mobile Sticky Action Bar */}
       <div className="mobile-action-bar">
         <a
-          href="tel:7567277723"
+          href="tel:+917567277723"
           style={{
             flex: 1, padding: "0.75rem", background: "#00b4d8", color: "#fff", textAlign: "center",
             borderRadius: "10px", fontWeight: 700, textDecoration: "none", fontSize: "0.9rem"
@@ -1079,22 +1030,22 @@ export default function App() {
         </a>
       </div>
 
- {/* Professional Footer with JD3learn Credits */}
-<footer style={{ 
-  padding: "2.5rem 6% 5.5rem", 
-  textAlign: "center", 
-  background: "#030b17", 
-  color: "#94a3b8", 
-  fontSize: "0.85rem",
-  borderTop: "1px solid rgba(0, 180, 216, 0.2)"
-}}>
-  <div style={{ marginBottom: "8px" }}>
-    © 2026 The Sky Tuition Classes. All Rights Reserved. • Sardarbag, Junagadh, Gujarat
-  </div>
-  <div style={{ fontSize: "0.8rem", color: "#64748b" }}>
-    Designed & Engineered by <span style={{ color: "#00d2ff", fontWeight: 700 }}>JD3learn</span>
-  </div>
-</footer> 
+      {/* Professional Footer with JD3learn Credits */}
+      <footer style={{ 
+        padding: "2.5rem 6% 5.5rem", 
+        textAlign: "center", 
+        background: "#030b17", 
+        color: "#94a3b8", 
+        fontSize: "0.85rem",
+        borderTop: "1px solid rgba(0, 180, 216, 0.2)"
+      }}>
+        <div style={{ marginBottom: "8px" }}>
+          © 2026 The Sky Tuition Classes. All Rights Reserved. • Sardarbag, Junagadh, Gujarat
+        </div>
+        <div style={{ fontSize: "0.8rem", color: "#64748b" }}>
+          Designed & Engineered by <span style={{ color: "#00d2ff", fontWeight: 700 }}>JD3learn</span>
+        </div>
+      </footer> 
     </div>
   );
 }
