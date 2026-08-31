@@ -1,23 +1,23 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import "./App.css";
 
 const TOTAL_FRAMES = 60;
 const FOLDER_PATH = "/frames";
 
 const TOPPERS = [
-  { name: "Mustafa Jethva", score: "95.67%", grade: "A1", desc: "Top Scorer" },
-  { name: "Arman Malek", score: "95.22%", grade: "A1", desc: "Mathematics Star" },
-  { name: "Alveera Khan Turk", score: "94.00%", grade: "A1", desc: "Academic Excellence" },
-  { name: "Ayan Sameja", score: "92.33%", grade: "A1", desc: "High Achiever" },
-  { name: "Aayesha Aziz", score: "88.47%", grade: "A2", desc: "Science Distinction" },
-  { name: "Mo. Faiz Khatri", score: "88.30%", grade: "A2", desc: "Language Mastery" },
-  { name: "Rehan Motiwala", score: "84.56%", grade: "A2", desc: "Consistent Performer" },
-  { name: "Ammar Motiwala", score: "83.89%", grade: "A2", desc: "Concept Pro" },
-  { name: "Mo. Shabir Shoharvardi", score: "80.42%", grade: "A2", desc: "Analytical Mind" },
-  { name: "Vali Shah Khan", score: "80.00%", grade: "A2", desc: "Dedicated Scholar" },
-  { name: "Arsh Rinbloch", score: "68.71%", grade: "B2", desc: "Commerce Achiever" },
-  { name: "Anzar Khan Turk", score: "68.29%", grade: "B2", desc: "Board Achiever" },
-  { name: "Mohammad Bhata", score: "67.84%", grade: "B2", desc: "Board Achiever" },
+  { name: "Mustafa Jethva", score: "95.67%", grade: "A1", desc: "Top Board Scorer", icon: "🏆" },
+  { name: "Arman Malek", score: "95.22%", grade: "A1", desc: "Mathematics Star", icon: "🥇" },
+  { name: "Alveera Khan Turk", score: "94.00%", grade: "A1", desc: "Academic Excellence", icon: "🌟" },
+  { name: "Ayan Sameja", score: "92.33%", grade: "A1", desc: "High Achiever", icon: "⭐" },
+  { name: "Aayesha Aziz", score: "88.47%", grade: "A2", desc: "Science Distinction", icon: "🎖️" },
+  { name: "Mo. Faiz Khatri", score: "88.30%", grade: "A2", desc: "Language Mastery", icon: "🎖️" },
+  { name: "Rehan Motiwala", score: "84.56%", grade: "A2", desc: "Consistent Performer", icon: "🎖️" },
+  { name: "Ammar Motiwala", score: "83.89%", grade: "A2", desc: "Concept Master", icon: "🎖️" },
+  { name: "Mo. Shabir Shoharvardi", score: "80.42%", grade: "A2", desc: "Analytical Mind", icon: "🎖️" },
+  { name: "Vali Shah Khan", score: "80.00%", grade: "A2", desc: "Dedicated Scholar", icon: "🎖️" },
+  { name: "Arsh Rinbloch", score: "68.71%", grade: "B2", desc: "Commerce Achiever", icon: "🏅" },
+  { name: "Anzar Khan Turk", score: "68.29%", grade: "B2", desc: "Board Achiever", icon: "🏅" },
+  { name: "Mohammad Bhata", score: "67.84%", grade: "B2", desc: "Board Achiever", icon: "🏅" },
 ];
 
 const FACULTY = [
@@ -57,11 +57,14 @@ const RULES_LIST = [
   { cat: "એક્સ્ટ્રા ક્લાસ", rule: "વિદ્યાર્થીઓના શૈક્ષણિક સુધારા માટે જરૂર જણાય ત્યારે રવિવારની રજા રદ કરી એક્સ્ટ્રા ક્લાસ રાખવામાં આવશે." },
   { cat: "વાલી મિટિંગ", rule: "જરૂરિયાત અનુસાર પેરેન્ટ્સ મિટિંગ (PTM) ગોઠવવામાં આવતાં વાલીશ્રીઓએ અચૂક હાજરી આપવી." },
   { cat: "ફી પોલિસી", rule: "ટ્યુશન ફી દર માસની શરૂઆતમાં ૧ થી ૧૦ તારીખ સુધીમાં ભરી પહોંચ મેળવી લેવી (૧૦ પછી ₹૧૦૦ લેટ ફી લાગશે)." },
-  { cat: "એડમિશન ડોક્યુમેન્ટ્સ", rule: "એડમિશન ફોર્મ સાથે ફોટો, આધારકાર્ડ ઝેરોક્ષ, નિયમ સંમતિ પત્ર અને અગાઉના રિઝલ્ટની નકલ જોડવી ફરજિયાત છે." }
+  { cat: "એડમિશન ડોક્યુમેન્ટ્સ", rule: "એડમિશન ફોર્મ સાથે ફોટો, ઓળખકાર્ડ ઝેરોક્ષ, નિયમ સંમતિ પત્ર અને અગાઉના રિઝલ્ટની નકલ જોડવી ફરજિયાત છે." }
 ];
 
 export default function App() {
-  const [currentFrame, setCurrentFrame] = useState(1);
+  const canvasRef = useRef(null);
+  const imagesRef = useRef([]);
+  const trackRef = useRef(null);
+  
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeGradeFilter, setActiveGradeFilter] = useState("ALL");
   const [showRulesModal, setShowRulesModal] = useState(false);
@@ -74,44 +77,112 @@ export default function App() {
     return `${FOLDER_PATH}/ezgif-frame-${pad}.jpg`;
   };
 
+  const renderFrame = (index) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const img = imagesRef.current[index];
+    if (!img || !img.complete) return;
+
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w;
+      canvas.height = h;
+    }
+
+    const imgW = img.naturalWidth || 1280;
+    const imgH = img.naturalHeight || 720;
+
+    const scale = Math.max(w / imgW, h / imgH);
+    const nw = imgW * scale;
+    const nh = imgH * scale;
+    const nx = (w - nw) / 2;
+    const ny = (h - nh) / 2;
+
+    ctx.drawImage(img, nx, ny, nw, nh);
+  };
+
   useEffect(() => {
     let loaded = 0;
+    const loadedImages = [];
+
     for (let i = 1; i <= TOTAL_FRAMES; i++) {
       const img = new Image();
       img.src = getFrameSrc(i);
-      img.onload = () => {
+      
+      img.decode ? img.decode().then(() => {
         loaded++;
         setLoadProgress(Math.round((loaded / TOTAL_FRAMES) * 100));
-        if (loaded === TOTAL_FRAMES) setIsLoading(false);
-      };
-      img.onerror = () => {
+        if (loaded === TOTAL_FRAMES) {
+          setIsLoading(false);
+          renderFrame(0);
+        }
+      }).catch(() => {
         loaded++;
-        if (loaded === TOTAL_FRAMES) setIsLoading(false);
-      };
+        if (loaded === TOTAL_FRAMES) {
+          setIsLoading(false);
+          renderFrame(0);
+        }
+      }) : (img.onload = () => {
+        loaded++;
+        setLoadProgress(Math.round((loaded / TOTAL_FRAMES) * 100));
+        if (loaded === TOTAL_FRAMES) {
+          setIsLoading(false);
+          renderFrame(0);
+        }
+      });
+
+      loadedImages.push(img);
     }
+    imagesRef.current = loadedImages;
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const windowHeight = window.innerHeight;
-      const trackHeight = windowHeight * 3;
+    let ticking = false;
 
-      let progress = scrollTop / trackHeight;
-      progress = Math.max(0, Math.min(progress, 1));
-      setScrollProgress(progress);
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollTop = window.scrollY || document.documentElement.scrollTop;
+          const windowHeight = window.innerHeight;
+          const trackHeight = windowHeight * 3;
 
-      const frameIdx = Math.min(
-        TOTAL_FRAMES,
-        Math.max(1, Math.floor(progress * TOTAL_FRAMES) + 1)
-      );
+          let progress = scrollTop / trackHeight;
+          progress = Math.max(0, Math.min(progress, 1));
+          setScrollProgress(progress);
 
-      setCurrentFrame(frameIdx);
+          const frameIdx = Math.min(
+            TOTAL_FRAMES - 1,
+            Math.floor(progress * (TOTAL_FRAMES - 1))
+          );
+
+          renderFrame(frameIdx);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    const onResize = () => {
+      const frameIdx = Math.min(
+        TOTAL_FRAMES - 1,
+        Math.floor(scrollProgress * (TOTAL_FRAMES - 1))
+      );
+      renderFrame(frameIdx);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [scrollProgress]);
 
   const filteredToppers = useMemo(() => {
     if (activeGradeFilter === "ALL") return TOPPERS;
@@ -144,9 +215,9 @@ export default function App() {
 
   return (
     <div>
-      {/* Preload Overlay */}
+      {/* Loading Progress Screen */}
       {isLoading && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 99999, background: "#040d1a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ position: "fixed", inset: 0, zIndex: 99999, background: "#030b17", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
           <h2 style={{ color: "#00b4d8", marginBottom: "1rem", letterSpacing: "2px", fontSize: "1.3rem" }}>THE SKY TUITION CLASSES</h2>
           <div style={{ width: "240px", height: "4px", background: "rgba(255,255,255,0.1)", borderRadius: "4px", overflow: "hidden" }}>
             <div style={{ width: `${loadProgress}%`, height: "100%", background: "#00b4d8", transition: "width 0.2s" }} />
@@ -159,20 +230,20 @@ export default function App() {
       <nav style={{
         position: "fixed", top: 0, width: "100%", padding: "0.8rem 6%", display: "flex",
         justifyContent: "space-between", alignItems: "center", zIndex: 1000,
-        background: "rgba(4, 13, 26, 0.9)", backdropFilter: "blur(14px)", borderBottom: "1px solid rgba(0, 180, 216, 0.25)"
+        background: "rgba(3, 11, 23, 0.92)", backdropFilter: "blur(14px)", borderBottom: "1px solid rgba(0, 180, 216, 0.3)"
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <img
             src="/logo.png"
             alt="The Sky Tuition Classes Logo"
             onError={(e) => { e.target.style.display = 'none'; }}
-            style={{ width: "42px", height: "42px", borderRadius: "50%", objectFit: "cover", border: "1px solid #00b4d8" }}
+            style={{ width: "45px", height: "45px", borderRadius: "50%", objectFit: "cover", border: "2px solid #00b4d8" }}
           />
           <div>
-            <div style={{ fontWeight: 800, fontSize: "1.15rem", letterSpacing: "1px" }}>
+            <div style={{ fontWeight: 800, fontSize: "1.2rem", letterSpacing: "1px" }}>
               THE <span style={{ color: "#00b4d8" }}>SKY</span>
             </div>
-            <div style={{ fontSize: "0.62rem", letterSpacing: "1.5px", color: "#94a3b8" }}>
+            <div style={{ fontSize: "0.65rem", letterSpacing: "1.5px", color: "#f59e0b", fontWeight: 700 }}>
               TUITION CLASSES • "TIME TO SHINE"
             </div>
           </div>
@@ -181,27 +252,33 @@ export default function App() {
         <div style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
           <a href="#results" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.9rem", fontWeight: 600 }}>Results</a>
           <a href="#courses" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.9rem", fontWeight: 600 }}>Courses</a>
+          <a href="#gallery" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.9rem", fontWeight: 600 }}>Gallery</a>
           <a href="#faculty" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.9rem", fontWeight: 600 }}>Faculty</a>
           <a href="#vacation" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.9rem", fontWeight: 600 }}>Vacation Camp</a>
-          <a href="#register" className="btn-primary" style={{ padding: "0.5rem 1.2rem", fontSize: "0.85rem" }}>
+          <a href="#register" className="btn-gold" style={{ padding: "0.45rem 1.1rem", fontSize: "0.85rem" }}>
             Book Demo
           </a>
         </div>
       </nav>
 
       {/* 3D Scrollytelling Visual Canvas */}
-      <div style={{ height: "400vh", position: "relative" }}>
+      <div ref={trackRef} style={{ height: "400vh", position: "relative" }}>
         <div style={{ position: "sticky", top: 0, width: "100vw", height: "100vh", overflow: "hidden" }}>
           
-          <img
-            src={getFrameSrc(currentFrame)}
-            alt={`Scrollytelling Frame ${currentFrame}`}
-            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+          <canvas
+            ref={canvasRef}
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "block",
+              transform: "translateZ(0)",
+              willChange: "transform"
+            }}
           />
 
           <div style={{
             position: "absolute", inset: 0, pointerEvents: "none",
-            background: "radial-gradient(circle at center, transparent 35%, rgba(4, 13, 26, 0.88) 100%)"
+            background: "radial-gradient(circle at center, transparent 30%, rgba(3, 11, 23, 0.9) 100%)"
           }} />
 
           {/* STAGE 1 (0% - 25%) */}
@@ -210,15 +287,15 @@ export default function App() {
             justifyContent: "flex-end", alignItems: "center", textAlign: "center", paddingBottom: "5.5rem",
             opacity: scrollProgress < 0.25 ? 1 - scrollProgress * 4 : 0,
             pointerEvents: scrollProgress < 0.25 ? "auto" : "none",
-            transition: "opacity 0.2s"
+            transition: "opacity 0.15s ease-out"
           }}>
-            <span style={{ color: "#f59e0b", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", fontSize: "0.85rem", background: "rgba(4, 13, 26, 0.75)", padding: "5px 16px", borderRadius: "20px", border: "1px solid rgba(245, 158, 11, 0.35)" }}>
-              ★ "Time to Shine" ★
+            <span style={{ color: "#f59e0b", fontWeight: 800, letterSpacing: "2px", textTransform: "uppercase", fontSize: "0.85rem", background: "rgba(3, 11, 23, 0.85)", padding: "6px 18px", borderRadius: "20px", border: "1px solid rgba(245, 158, 11, 0.5)" }}>
+              ★ "TIME TO SHINE" ★
             </span>
             <h1 style={{ fontSize: "clamp(2rem, 4.5vw, 3.8rem)", fontWeight: 800, margin: "0.8rem 0 0.4rem", textShadow: "0 4px 20px rgba(0,0,0,0.9)" }}>
               From Stressed to <span style={{ color: "#00d2ff" }}>Unstoppable.</span>
             </h1>
-            <p style={{ color: "#e2e8f0", maxWidth: "600px", fontSize: "1.05rem", background: "rgba(4, 13, 26, 0.65)", padding: "8px 18px", borderRadius: "12px" }}>
+            <p style={{ color: "#e2e8f0", maxWidth: "600px", fontSize: "1.05rem", background: "rgba(3, 11, 23, 0.75)", padding: "8px 18px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)" }}>
               Admissions Open 2026–27 | Std. 5 to 10 (All Subjects) & 11-12th Commerce (GSEB Eng/Guj Med)
             </p>
           </div>
@@ -227,7 +304,7 @@ export default function App() {
           <div style={{
             position: "absolute", top: "50%", left: "6%", transform: "translateY(-50%)",
             opacity: scrollProgress >= 0.25 && scrollProgress < 0.55 ? 1 : 0,
-            transition: "opacity 0.3s", maxWidth: "420px", pointerEvents: "none"
+            transition: "opacity 0.25s ease-out", maxWidth: "420px", pointerEvents: "none"
           }}>
             <div className="glass-card" style={{ padding: "2rem" }}>
               <span style={{ color: "#00b4d8", fontSize: "0.8rem", fontWeight: 700, letterSpacing: "1px" }}>DEEP CONCEPT CLARITY</span>
@@ -242,7 +319,7 @@ export default function App() {
           <div style={{
             position: "absolute", top: "50%", right: "6%", transform: "translateY(-50%)",
             opacity: scrollProgress >= 0.55 && scrollProgress < 0.8 ? 1 : 0,
-            transition: "opacity 0.3s", maxWidth: "420px", pointerEvents: "none"
+            transition: "opacity 0.25s ease-out", maxWidth: "420px", pointerEvents: "none"
           }}>
             <div className="glass-card" style={{ padding: "2rem", borderColor: "rgba(245, 158, 11, 0.4)" }}>
               <span style={{ color: "#f59e0b", fontSize: "0.8rem", fontWeight: 700, letterSpacing: "1px" }}>REGULAR EVALUATIONS</span>
@@ -259,7 +336,7 @@ export default function App() {
             justifyContent: "center", alignItems: "center", textAlign: "center", padding: "2rem",
             opacity: scrollProgress >= 0.8 ? (scrollProgress - 0.8) * 5 : 0,
             pointerEvents: scrollProgress >= 0.8 ? "auto" : "none",
-            transition: "opacity 0.2s"
+            transition: "opacity 0.2s ease-out"
           }}>
             <h2 style={{ fontSize: "clamp(2.2rem, 4.5vw, 3.5rem)", fontWeight: 800 }}>
               Building Strong Foundations for a Bright Future.
@@ -275,8 +352,8 @@ export default function App() {
         </div>
       </div>
 
-      {/* 3 Pillars Section */}
-      <section style={{ padding: "4.5rem 6%", background: "linear-gradient(180deg, #040d1a 0%, #08172e 100%)" }}>
+      {/* 3 Core Pillars Section */}
+      <section style={{ padding: "4.5rem 6%", background: "linear-gradient(180deg, #030b17 0%, #061838 100%)" }}>
         <div style={{ maxWidth: "1200px", margin: "auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem" }}>
           
           <div className="glass-card" style={{ padding: "2.2rem" }}>
@@ -306,8 +383,8 @@ export default function App() {
         </div>
       </section>
 
-      {/* Results & Interactive Hall of Fame */}
-      <section id="results" style={{ padding: "5rem 6%", background: "#040d1a" }}>
+      {/* Board Achievements & Toppers Wall (No Individual Photos Needed) */}
+      <section id="results" style={{ padding: "5rem 6%", background: "#030b17" }}>
         <div style={{ maxWidth: "1200px", margin: "auto" }}>
           
           <div style={{ textAlign: "center", marginBottom: "2.5rem" }}>
@@ -318,7 +395,7 @@ export default function App() {
             <p style={{ color: "#94a3b8" }}>Celebrating our outstanding academic achievers in GSEB Board Examinations</p>
 
             {/* Filter Tabs */}
-            <div style={{ display: "inline-flex", gap: "10px", marginTop: "1.8rem", background: "rgba(10, 25, 48, 0.8)", padding: "6px", borderRadius: "30px", border: "1px solid rgba(0, 180, 216, 0.3)" }}>
+            <div style={{ display: "inline-flex", gap: "10px", marginTop: "1.8rem", background: "rgba(10, 28, 58, 0.8)", padding: "6px", borderRadius: "30px", border: "1px solid rgba(0, 180, 216, 0.3)" }}>
               {["ALL", "A1", "A2", "B2"].map((grade) => (
                 <button
                   key={grade}
@@ -341,46 +418,126 @@ export default function App() {
             </div>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "1.5rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1.5rem" }}>
             {filteredToppers.map((topper, idx) => (
               <div
                 key={idx}
                 className="glass-card"
                 style={{
-                  padding: "1.6rem 1rem",
+                  padding: "1.8rem 1.2rem",
                   textAlign: "center",
-                  position: "relative"
+                  position: "relative",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center"
                 }}
               >
                 <div style={{
-                  position: "absolute", top: "10px", right: "10px", fontSize: "0.7rem", fontWeight: 700,
+                  position: "absolute", top: "12px", right: "12px", fontSize: "0.7rem", fontWeight: 700,
                   color: topper.grade === "A1" ? "#f59e0b" : "#00b4d8",
-                  background: "rgba(0,0,0,0.5)", padding: "2px 8px", borderRadius: "10px",
+                  background: "rgba(0,0,0,0.6)", padding: "2px 8px", borderRadius: "10px",
                   border: `1px solid ${topper.grade === "A1" ? "#f59e0b40" : "#00b4d840"}`
                 }}>
                   {topper.grade} Grade
                 </div>
-                <div style={{ fontSize: "2rem", marginBottom: "0.4rem" }}>🎓</div>
+
+                {/* Royal Monogram Avatar Badge */}
+                <div style={{
+                  width: "70px",
+                  height: "70px",
+                  borderRadius: "50%",
+                  background: topper.grade === "A1"
+                    ? "linear-gradient(135deg, #d97706, #f59e0b)"
+                    : "linear-gradient(135deg, #0284c7, #00b4d8)",
+                  color: "#ffffff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "1.5rem",
+                  fontWeight: 800,
+                  marginBottom: "0.8rem",
+                  boxShadow: topper.grade === "A1"
+                    ? "0 4px 15px rgba(245, 158, 11, 0.35)"
+                    : "0 4px 15px rgba(0, 180, 216, 0.35)"
+                }}>
+                  {topper.name.charAt(0)}
+                </div>
+
                 <h4 style={{ color: "#fff", fontSize: "1.05rem", margin: "0.2rem 0" }}>{topper.name}</h4>
-                <div style={{ color: topper.grade === "A1" ? "#f59e0b" : "#00b4d8", fontSize: "1.4rem", fontWeight: 800, margin: "0.3rem 0" }}>
+                <div style={{ color: topper.grade === "A1" ? "#f59e0b" : "#00b4d8", fontSize: "1.45rem", fontWeight: 800, margin: "0.2rem 0" }}>
                   {topper.score}
                 </div>
-                <span style={{ fontSize: "0.75rem", color: "#94a3b8" }}>{topper.desc}</span>
+                <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>{topper.icon} {topper.desc}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Courses & Facilities */}
-      <section id="courses" style={{ padding: "5rem 6%", background: "#061224" }}>
+      {/* Official Banners & Pamphlet Gallery Section */}
+      <section id="gallery" style={{ padding: "5rem 6%", background: "#051329" }}>
+        <div style={{ maxWidth: "1200px", margin: "auto" }}>
+          
+          <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+            <span style={{ color: "#00b4d8", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", fontSize: "0.85rem" }}>
+              INSTITUTE HIGHLIGHTS & BANNERS
+            </span>
+            <h2 style={{ fontSize: "2.4rem", margin: "0.5rem 0" }}>Campus & Result Gallery</h2>
+            <p style={{ color: "#94a3b8" }}>Official posters, hoardings, and academic pamphlets of The Sky Tuition Classes</p>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "2rem", alignItems: "center" }}>
+            
+            {/* Admission Poster */}
+            <div className="glass-card" style={{ padding: "1.2rem", overflow: "hidden" }}>
+              <img
+                src="/poster-admission.jpg"
+                alt="Admission Open Poster 2026-27"
+                onError={(e) => { e.target.style.display = 'none'; }}
+                style={{ width: "100%", height: "280px", objectFit: "cover", borderRadius: "12px", border: "1px solid rgba(0, 180, 216, 0.3)" }}
+              />
+              <h4 style={{ marginTop: "1rem", color: "#fff", fontSize: "1.1rem" }}>Admissions Open 2026–27</h4>
+              <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginTop: "4px" }}>Std. 5 to 10 (All Subjects) & Std. 11-12 Commerce</p>
+            </div>
+
+            {/* Toppers Hoarding Banner (Shows all student photos here) */}
+            <div className="glass-card" style={{ padding: "1.2rem", overflow: "hidden" }}>
+              <img
+                src="/banner-toppers.jpg"
+                alt="Sky Tuition Board Result Hoarding"
+                onError={(e) => { e.target.style.display = 'none'; }}
+                style={{ width: "100%", height: "280px", objectFit: "cover", borderRadius: "12px", border: "1px solid rgba(0, 180, 216, 0.3)" }}
+              />
+              <h4 style={{ marginTop: "1rem", color: "#fff", fontSize: "1.1rem" }}>Official Result Hoarding</h4>
+              <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginTop: "4px" }}>GSEB Board Toppers with Certified Scores</p>
+            </div>
+
+            {/* Visiting Card & Pamphlet */}
+            <div className="glass-card" style={{ padding: "1.2rem", overflow: "hidden" }}>
+              <img
+                src="/visiting-card.jpg"
+                alt="Visiting Card - Saqib Vidha"
+                onError={(e) => { e.target.style.display = 'none'; }}
+                style={{ width: "100%", height: "280px", objectFit: "cover", borderRadius: "12px", border: "1px solid rgba(0, 180, 216, 0.3)" }}
+              />
+              <h4 style={{ marginTop: "1rem", color: "#fff", fontSize: "1.1rem" }}>Director Visiting Card</h4>
+              <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginTop: "4px" }}>Official contact and institute coordinates</p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* Courses & Curriculum Section */}
+      <section id="courses" style={{ padding: "5rem 6%", background: "#030b17" }}>
         <div style={{ maxWidth: "1200px", margin: "auto" }}>
           
           <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
-            <span style={{ color: "#00b4d8", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", fontSize: "0.85rem" }}>
-              ACADEMIC OFFERINGS
+            <span style={{ color: "#f59e0b", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", fontSize: "0.85rem" }}>
+              ACADEMIC CURRICULUM
             </span>
-            <h2 style={{ fontSize: "2.4rem", margin: "0.5rem 0" }}>Standards & Curriculum</h2>
+            <h2 style={{ fontSize: "2.4rem", margin: "0.5rem 0" }}>Standards & Subjects Offered</h2>
             <p style={{ color: "#94a3b8" }}>GSEB Board • English & Gujarati Medium Batches</p>
           </div>
 
@@ -398,8 +555,8 @@ export default function App() {
               </div>
             </div>
 
-            <div className="glass-card" style={{ padding: "2.5rem", borderColor: "rgba(245, 158, 11, 0.3)" }}>
-              <span style={{ background: "#f59e0b", color: "#fff", padding: "4px 12px", borderRadius: "12px", fontSize: "0.8rem", fontWeight: 700 }}>HIGHER SECONDARY</span>
+            <div className="glass-card" style={{ padding: "2.5rem", borderColor: "rgba(245, 158, 11, 0.4)" }}>
+              <span style={{ background: "#f59e0b", color: "#000", padding: "4px 12px", borderRadius: "12px", fontSize: "0.8rem", fontWeight: 800 }}>HIGHER SECONDARY</span>
               <h3 style={{ fontSize: "1.8rem", margin: "1rem 0 0.5rem" }}>Std. 11th & 12th Commerce</h3>
               <p style={{ color: "#94a3b8", fontSize: "0.95rem", marginBottom: "1.2rem" }}>Specialized coaching designed for commerce board exams with practical accountancy focus.</p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
@@ -432,7 +589,7 @@ export default function App() {
       </section>
 
       {/* Director & Faculty Showcase */}
-      <section id="faculty" style={{ padding: "5rem 6%", background: "#040d1a" }}>
+      <section id="faculty" style={{ padding: "5rem 6%", background: "#051329" }}>
         <div style={{ maxWidth: "1200px", margin: "auto" }}>
           
           <div className="glass-card" style={{
@@ -450,8 +607,8 @@ export default function App() {
                 alt="Director Saqib Vidha"
                 onError={(e) => { e.target.style.display = 'none'; }}
                 style={{
-                  width: "220px",
-                  height: "260px",
+                  width: "230px",
+                  height: "270px",
                   objectFit: "cover",
                   borderRadius: "16px",
                   border: "2px solid #00b4d8",
@@ -503,7 +660,7 @@ export default function App() {
       </section>
 
       {/* Vacation Activity Camp */}
-      <section id="vacation" style={{ padding: "5rem 6%", background: "linear-gradient(180deg, #061224 0%, #0a1f3d 100%)" }}>
+      <section id="vacation" style={{ padding: "5rem 6%", background: "linear-gradient(180deg, #051329 0%, #030b17 100%)" }}>
         <div style={{ maxWidth: "1200px", margin: "auto" }}>
           
           <div style={{ textAlign: "center", marginBottom: "3rem" }}>
@@ -517,7 +674,7 @@ export default function App() {
           </div>
 
           <div className="glass-card" style={{
-            borderColor: "rgba(245, 158, 11, 0.35)",
+            borderColor: "rgba(245, 158, 11, 0.4)",
             padding: "2.5rem",
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
@@ -537,7 +694,7 @@ export default function App() {
               </div>
             </div>
 
-            <div style={{ background: "rgba(4, 13, 26, 0.8)", padding: "2rem", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.1)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div style={{ background: "rgba(3, 11, 23, 0.85)", padding: "2rem", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.1)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
               <div>
                 <span style={{ color: "#00b4d8", fontSize: "0.85rem", fontWeight: 700 }}>EVENT DETAILS</span>
                 <h4 style={{ fontSize: "1.5rem", margin: "0.5rem 0 1rem" }}>Schedule & Venue</h4>
@@ -551,10 +708,8 @@ export default function App() {
                 href="https://wa.me/917567277723?text=Hello%20Saqib%20Sir,%20I%20want%20to%20register%20for%20the%20Vacation%20Indoor%20Sports%20Week"
                 target="_blank"
                 rel="noreferrer"
-                style={{
-                  marginTop: "1.5rem", background: "#f59e0b", color: "#000", padding: "0.85rem", borderRadius: "10px",
-                  textAlign: "center", textDecoration: "none", fontWeight: 700, fontSize: "0.95rem"
-                }}
+                className="btn-gold"
+                style={{ marginTop: "1.5rem" }}
               >
                 Register on WhatsApp
               </a>
@@ -565,7 +720,7 @@ export default function App() {
       </section>
 
       {/* Rules Modal Trigger & Library */}
-      <section style={{ padding: "4.5rem 6%", background: "#040d1a" }}>
+      <section style={{ padding: "4.5rem 6%", background: "#030b17" }}>
         <div style={{ maxWidth: "1200px", margin: "auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2.5rem", alignItems: "center" }}>
           
           <div className="glass-card" style={{ padding: "2.5rem" }}>
@@ -610,7 +765,7 @@ export default function App() {
           display: "flex", alignItems: "center", justifyContent: "center", padding: "1.5rem"
         }}>
           <div style={{
-            background: "#08172e", border: "1px solid rgba(0, 180, 216, 0.4)", borderRadius: "20px",
+            background: "#051329", border: "1px solid rgba(0, 180, 216, 0.4)", borderRadius: "20px",
             maxWidth: "700px", width: "100%", maxHeight: "85vh", display: "flex", flexDirection: "column"
           }}>
             <div style={{ padding: "1.5rem 2rem", borderBottom: "1px solid rgba(255,255,255,0.1)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -625,7 +780,7 @@ export default function App() {
                 placeholder="🔍 Search rules (e.g., ફી, ટેસ્ટ, હોમવર્ક)..."
                 value={ruleSearch}
                 onChange={(e) => setRuleSearch(e.target.value)}
-                style={{ width: "100%", padding: "0.75rem 1rem", background: "#040d1a", border: "1px solid rgba(0,180,216,0.3)", borderRadius: "8px", color: "#fff", outline: "none" }}
+                style={{ width: "100%", padding: "0.75rem 1rem", background: "#030b17", border: "1px solid rgba(0,180,216,0.3)", borderRadius: "8px", color: "#fff", outline: "none" }}
               />
             </div>
 
@@ -700,12 +855,12 @@ export default function App() {
                 type="text"
                 placeholder="Student Full Name"
                 required
-                style={{ padding: "0.9rem", background: "#040d1a", border: "1px solid rgba(0, 180, 216, 0.25)", borderRadius: "8px", color: "#fff", outline: "none" }}
+                style={{ padding: "0.9rem", background: "#030b17", border: "1px solid rgba(0, 180, 216, 0.25)", borderRadius: "8px", color: "#fff", outline: "none" }}
               />
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 <select
                   id="demoGrade"
-                  style={{ padding: "0.9rem", background: "#040d1a", border: "1px solid rgba(0, 180, 216, 0.25)", borderRadius: "8px", color: "#fff", outline: "none" }}
+                  style={{ padding: "0.9rem", background: "#030b17", border: "1px solid rgba(0, 180, 216, 0.25)", borderRadius: "8px", color: "#fff", outline: "none" }}
                 >
                   <option value="Std. 10th Board">Std. 10th (Board)</option>
                   <option value="Std. 12th Commerce">Std. 12th Commerce</option>
@@ -717,7 +872,7 @@ export default function App() {
 
                 <select
                   id="demoMedium"
-                  style={{ padding: "0.9rem", background: "#040d1a", border: "1px solid rgba(0, 180, 216, 0.25)", borderRadius: "8px", color: "#fff", outline: "none" }}
+                  style={{ padding: "0.9rem", background: "#030b17", border: "1px solid rgba(0, 180, 216, 0.25)", borderRadius: "8px", color: "#fff", outline: "none" }}
                 >
                   <option value="English Medium (GSEB)">English Medium</option>
                   <option value="Gujarati Medium (GSEB)">Gujarati Medium</option>
@@ -729,7 +884,7 @@ export default function App() {
                 type="tel"
                 placeholder="Parent WhatsApp Number"
                 required
-                style={{ padding: "0.9rem", background: "#040d1a", border: "1px solid rgba(0, 180, 216, 0.25)", borderRadius: "8px", color: "#fff", outline: "none" }}
+                style={{ padding: "0.9rem", background: "#030b17", border: "1px solid rgba(0, 180, 216, 0.25)", borderRadius: "8px", color: "#fff", outline: "none" }}
               />
 
               <button
@@ -758,7 +913,7 @@ export default function App() {
         💬
       </a>
 
-      {/* Mobile Sticky Quick Action Bar */}
+      {/* Mobile Sticky Action Bar */}
       <div className="mobile-action-bar">
         <a
           href="tel:7567277723"
@@ -783,7 +938,7 @@ export default function App() {
       </div>
 
       {/* Footer */}
-      <footer style={{ padding: "2.5rem 6% 5.5rem", textAlign: "center", borderTop: "1px solid rgba(0, 180, 216, 0.15)", color: "#64748b", fontSize: "0.85rem" }}>
+      <footer style={{ padding: "2.5rem 6% 5.5rem", textAlign: "center", borderTop: "1px solid rgba(0, 180, 216, 0.2)", color: "#64748b", fontSize: "0.85rem" }}>
         © 2026 The Sky Tuition Classes. All Rights Reserved. • Sardarbag, Junagadh, Gujarat
       </footer>
     </div>
