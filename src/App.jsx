@@ -228,41 +228,92 @@ export default function App() {
           <span style={{ fontSize: "0.85rem", marginTop: "0.8rem", color: "#94a3b8" }}>Loading Experience {loadProgress}%</span>
         </div>
       )}
+{/* Fixed Navbar with proper Spacing & Smooth Navigation */}
+<nav style={{
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100%",
+  padding: "0.75rem 2rem",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  zIndex: 1000,
+  background: "rgba(3, 11, 23, 0.95)",
+  backdropFilter: "blur(14px)",
+  borderBottom: "1px solid rgba(0, 180, 216, 0.25)",
+  boxShadow: "0 4px 20px rgba(0,0,0,0.5)"
+}}>
+  {/* Logo & Brand Name (No Overlapping) */}
+{/* Left Brand Identity: THE SKY TUITION CLASSES on One Line */}
+<div style={{ display: "flex", alignItems: "center", gap: "12px", minWidth: "fit-content" }}>
+  <img
+    src="/logo.png"
+    alt="Logo"
+    onError={(e) => { e.target.style.display = 'none'; }}
+    style={{
+      width: "42px",
+      height: "42px",
+      borderRadius: "50%",
+      objectFit: "cover",
+      border: "2px solid #00b4d8",
+      flexShrink: 0
+    }}
+  />
+  <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+    
+    {/* Line 1: Main Title + Badge */}
+    <div style={{ display: "flex", alignItems: "center", gap: "8px", lineHeight: "1.2" }}>
+      <span style={{ fontWeight: 800, fontSize: "1.1rem", letterSpacing: "0.8px", color: "#ffffff", whiteSpace: "nowrap" }}>
+        THE <span style={{ color: "#00d2ff" }}>SKY</span> TUITION CLASSES
+      </span>
+ 
+    </div>
 
-      {/* Header Navigation */}
-      <nav style={{
-        position: "fixed", top: 0, width: "100%", padding: "0.8rem 6%", display: "flex",
-        justifyContent: "space-between", alignItems: "center", zIndex: 1000,
-        background: "rgba(3, 11, 23, 0.92)", backdropFilter: "blur(14px)", borderBottom: "1px solid rgba(0, 180, 216, 0.3)"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <img
-            src="/logo.png"
-            alt="The Sky Tuition Classes Logo"
-            onError={(e) => { e.target.style.display = 'none'; }}
-            style={{ width: "45px", height: "45px", borderRadius: "50%", objectFit: "cover", border: "2px solid #00b4d8" }}
-          />
-          <div>
-            <div style={{ fontWeight: 800, fontSize: "1.2rem", letterSpacing: "1px" }}>
-              THE <span style={{ color: "#00b4d8" }}>SKY</span>
-            </div>
-            <div style={{ fontSize: "0.65rem", letterSpacing: "1.5px", color: "#f59e0b", fontWeight: 700 }}>
-              TUITION CLASSES • "TIME TO SHINE"
-            </div>
-          </div>
-        </div>
+    {/* Line 2: Tagline Directly Below */}
+    <div style={{ fontSize: "0.65rem", letterSpacing: "1.5px", color: "#f59e0b", fontWeight: 700, marginTop: "2px" }}>
+      "TIME TO SHINE"
+    </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "1.2rem" }}>
-          <a href="#results" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.9rem", fontWeight: 600 }}>Results</a>
-          <a href="#courses" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.9rem", fontWeight: 600 }}>Courses</a>
-          <a href="#gallery" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.9rem", fontWeight: 600 }}>Gallery</a>
-          <a href="#faculty" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.9rem", fontWeight: 600 }}>Faculty</a>
-          <a href="#vacation" style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.9rem", fontWeight: 600 }}>Vacation Camp</a>
-          <a href="#register" className="btn-gold" style={{ padding: "0.45rem 1.1rem", fontSize: "0.85rem" }}>
-            Book Demo
-          </a>
-        </div>
-      </nav>
+  </div>
+</div>
+
+  {/* Navigation Links with Safe Right Margin */}
+  <div style={{ display: "flex", alignItems: "center", gap: "1.4rem" }}>
+    {["results", "courses", "gallery", "faculty", "vacation"].map((sec) => (
+      <a
+        key={sec}
+        href={`#${sec}`}
+        onClick={(e) => {
+          e.preventDefault();
+          const target = document.getElementById(sec);
+          if (target) {
+            const offset = 75;
+            const bodyRect = document.body.getBoundingClientRect().top;
+            const elementRect = target.getBoundingClientRect().top;
+            const elementPosition = elementRect - bodyRect;
+            window.scrollTo({ top: elementPosition - offset, behavior: "smooth" });
+          }
+        }}
+        style={{ color: "#cbd5e1", textDecoration: "none", fontSize: "0.9rem", fontWeight: 600, textTransform: "capitalize" }}
+      >
+        {sec === "vacation" ? "Vacation Camp" : sec}
+      </a>
+    ))}
+
+    <a
+      href="#register"
+      onClick={(e) => {
+        e.preventDefault();
+        document.getElementById("register")?.scrollIntoView({ behavior: "smooth" });
+      }}
+      className="btn-gold"
+      style={{ padding: "0.45rem 1.2rem", fontSize: "0.85rem", whiteSpace: "nowrap" }}
+    >
+      Book Demo
+    </a>
+  </div>
+</nav>
 
       {/* 3D Scrollytelling Visual Canvas */}
       <div ref={trackRef} style={{ height: "400vh", position: "relative" }}>
@@ -284,72 +335,112 @@ export default function App() {
             background: "radial-gradient(circle at center, transparent 30%, rgba(3, 11, 23, 0.9) 100%)"
           }} />
 
-          {/* STAGE 1 (0% - 25%) */}
+{/* STAGE 1 (0% - 25%): Hero Subtitle & Admission Badge */}
           <div style={{
             position: "absolute", inset: 0, display: "flex", flexDirection: "column",
-            justifyContent: "flex-end", alignItems: "center", textAlign: "center", paddingBottom: "5.5rem",
-            opacity: scrollProgress < 0.25 ? 1 - scrollProgress * 4 : 0,
-            pointerEvents: scrollProgress < 0.25 ? "auto" : "none",
+            justifyContent: "flex-end", alignItems: "center", textAlign: "center", paddingBottom: "4.5rem",
+            opacity: scrollProgress < 0.22 ? 1 - scrollProgress * 4.5 : 0,
+            pointerEvents: scrollProgress < 0.22 ? "auto" : "none",
             transition: "opacity 0.15s ease-out"
           }}>
-            <span style={{ color: "#f59e0b", fontWeight: 800, letterSpacing: "2px", textTransform: "uppercase", fontSize: "0.85rem", background: "rgba(3, 11, 23, 0.85)", padding: "6px 18px", borderRadius: "20px", border: "1px solid rgba(245, 158, 11, 0.5)" }}>
+            <span style={{ 
+              color: "#f59e0b", fontWeight: 800, letterSpacing: "2px", textTransform: "uppercase", 
+              fontSize: "0.85rem", background: "rgba(3, 11, 23, 0.9)", padding: "6px 18px", 
+              borderRadius: "20px", border: "1px solid rgba(245, 158, 11, 0.5)", marginBottom: "0.8rem",
+              boxShadow: "0 4px 15px rgba(0,0,0,0.6)"
+            }}>
               ★ "TIME TO SHINE" ★
             </span>
-            <h1 style={{ fontSize: "clamp(2rem, 4.5vw, 3.8rem)", fontWeight: 800, margin: "0.8rem 0 0.4rem", textShadow: "0 4px 20px rgba(0,0,0,0.9)" }}>
-              From Stressed to <span style={{ color: "#00d2ff" }}>Unstoppable.</span>
-            </h1>
-            <p style={{ color: "#e2e8f0", maxWidth: "600px", fontSize: "1.05rem", background: "rgba(3, 11, 23, 0.75)", padding: "8px 18px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)" }}>
+            <p style={{ 
+              color: "#ffffff", maxWidth: "620px", fontSize: "1.05rem", fontWeight: 600,
+              background: "rgba(3, 11, 23, 0.85)", padding: "10px 22px", borderRadius: "14px", 
+              border: "1px solid rgba(0, 180, 216, 0.3)", boxShadow: "0 6px 20px rgba(0,0,0,0.5)"
+            }}>
               Admissions Open 2026–27 | Std. 5 to 10 (All Subjects) & 11-12th Commerce (GSEB Eng/Guj Med)
             </p>
           </div>
 
-          {/* STAGE 2 (25% - 55%) */}
-          <div style={{
-            position: "absolute", top: "50%", left: "6%", transform: "translateY(-50%)",
-            opacity: scrollProgress >= 0.25 && scrollProgress < 0.55 ? 1 : 0,
-            transition: "opacity 0.25s ease-out", maxWidth: "420px", pointerEvents: "none"
-          }}>
-            <div className="glass-card" style={{ padding: "2rem" }}>
-              <span style={{ color: "#00b4d8", fontSize: "0.8rem", fontWeight: 700, letterSpacing: "1px" }}>DEEP CONCEPT CLARITY</span>
-              <h2 style={{ fontSize: "1.7rem", margin: "0.4rem 0 0.8rem" }}>Personalized Mentorship</h2>
-              <p style={{ color: "#cbd5e1", fontSize: "0.95rem", lineHeight: "1.5" }}>
-                Direct guidance under Director <strong>Saqib Vidha</strong> and dedicated faculties to clear fundamentals on the same day.
-              </p>
-            </div>
-          </div>
+          {/* STAGE 2 (25% - 50%): Concept Clarity & Mentorship */}
+{/* Optimized STAGE 2 Overlay: Placed to not block the Glowing Neon Sign */}
+<div style={{
+  position: "absolute", 
+  bottom: "12%", 
+  left: "6%", 
+  opacity: scrollProgress >= 0.25 && scrollProgress < 0.50 ? 1 : 0,
+  transition: "opacity 0.25s ease-out", 
+  maxWidth: "440px", 
+  pointerEvents: "none"
+}}>
+  <div className="glass-card" style={{ 
+    padding: "1.6rem 1.8rem", 
+    background: "rgba(3, 11, 23, 0.88)", 
+    backdropFilter: "blur(14px)", 
+    border: "1px solid rgba(0, 180, 216, 0.35)",
+    borderRadius: "16px",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.6)"
+  }}>
+    <span style={{ color: "#00d2ff", fontSize: "0.75rem", fontWeight: 800, letterSpacing: "1.2px" }}>
+      DEEP CONCEPT CLARITY
+    </span>
+    <h2 style={{ fontSize: "1.5rem", margin: "0.3rem 0 0.6rem", color: "#ffffff" }}>
+      Personalized Mentorship
+    </h2>
+    <p style={{ color: "#cbd5e1", fontSize: "0.9rem", lineHeight: "1.5" }}>
+      Direct guidance under Director <strong>Saqib Vidha Sir</strong> to eliminate exam anxiety and build rock-solid subject fundamentals.
+    </p>
+  </div>
+</div>
 
-          {/* STAGE 3 (55% - 80%) */}
+          {/* STAGE 3 (50% - 78%): Live Interactive Classroom (Matched with Saqib Sir Video) */}
           <div style={{
             position: "absolute", top: "50%", right: "6%", transform: "translateY(-50%)",
-            opacity: scrollProgress >= 0.55 && scrollProgress < 0.8 ? 1 : 0,
+            opacity: scrollProgress >= 0.50 && scrollProgress < 0.78 ? 1 : 0,
             transition: "opacity 0.25s ease-out", maxWidth: "420px", pointerEvents: "none"
           }}>
-            <div className="glass-card" style={{ padding: "2rem", borderColor: "rgba(245, 158, 11, 0.4)" }}>
-              <span style={{ color: "#f59e0b", fontSize: "0.8rem", fontWeight: 700, letterSpacing: "1px" }}>REGULAR EVALUATIONS</span>
-              <h2 style={{ fontSize: "1.7rem", margin: "0.4rem 0 0.8rem" }}>Weekly Test Series</h2>
+            <div className="glass-card" style={{ padding: "2rem", background: "rgba(3, 11, 23, 0.88)", backdropFilter: "blur(12px)", border: "1px solid rgba(245, 158, 11, 0.4)" }}>
+              <span style={{ color: "#f59e0b", fontSize: "0.8rem", fontWeight: 800, letterSpacing: "1px" }}>DIRECTOR'S SPECIALTY</span>
+              <h2 style={{ fontSize: "1.7rem", margin: "0.4rem 0 0.8rem", color: "#ffffff" }}>Board-Level Mathematics</h2>
               <p style={{ color: "#cbd5e1", fontSize: "0.95rem", lineHeight: "1.5" }}>
-                Weekly test papers signed by parents, maintained in home progress files with regular parent-teacher feedback sessions.
+                Interactive digital smartboard teaching, same-day doubt clearance, and rigorous weekly test tracking with parent progress files.
               </p>
             </div>
           </div>
 
-          {/* STAGE 4 (80% - 100%) */}
+          {/* STAGE 4 (78% - 100%): Final Call To Action (Trophy Scene with Safe Card Overlay) */}
           <div style={{
             position: "absolute", inset: 0, display: "flex", flexDirection: "column",
-            justifyContent: "center", alignItems: "center", textAlign: "center", padding: "2rem",
-            opacity: scrollProgress >= 0.8 ? (scrollProgress - 0.8) * 5 : 0,
-            pointerEvents: scrollProgress >= 0.8 ? "auto" : "none",
+            justifyContent: "center", alignItems: "center", textAlign: "center", padding: "1.5rem",
+            opacity: scrollProgress >= 0.78 ? (scrollProgress - 0.78) * 4.5 : 0,
+            pointerEvents: scrollProgress >= 0.78 ? "auto" : "none",
             transition: "opacity 0.2s ease-out"
           }}>
-            <h2 style={{ fontSize: "clamp(2.2rem, 4.5vw, 3.5rem)", fontWeight: 800 }}>
-              Building Strong Foundations for a Bright Future.
-            </h2>
-            <p style={{ color: "#e2e8f0", margin: "0.8rem 0 1.8rem", maxWidth: "540px" }}>
-              Enroll with Junagadh's most dedicated faculty team for disciplined board preparation.
-            </p>
-            <a href="#register" className="btn-whatsapp">
-              Book Free Academic Demo on WhatsApp
-            </a>
+            <div style={{
+              background: "rgba(3, 11, 23, 0.85)",
+              backdropFilter: "blur(16px)",
+              padding: "2.2rem 2rem",
+              borderRadius: "20px",
+              border: "1px solid rgba(0, 180, 216, 0.35)",
+              maxWidth: "640px",
+              boxShadow: "0 10px 40px rgba(0,0,0,0.7)"
+            }}>
+              <h2 style={{ fontSize: "clamp(1.8rem, 3.8vw, 2.6rem)", fontWeight: 800, color: "#ffffff", marginBottom: "0.6rem" }}>
+                Building Strong Foundations for a <span style={{ color: "#00d2ff" }}>Bright Future.</span>
+              </h2>
+              <p style={{ color: "#cbd5e1", fontSize: "0.95rem", lineHeight: "1.6", marginBottom: "1.5rem" }}>
+                Enroll with Junagadh's most dedicated faculty team for disciplined board preparation.
+              </p>
+              <a 
+                href="#register" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById("register")?.scrollIntoView({ behavior: "smooth" });
+                }} 
+                className="btn-whatsapp" 
+                style={{ padding: "0.85rem 1.8rem", fontSize: "0.95rem" }}
+              >
+                Book Free Academic Demo on WhatsApp
+              </a>
+            </div>
           </div>
 
         </div>
@@ -496,7 +587,7 @@ export default function App() {
       fontWeight: 800
     }}>
       {topper.name.charAt(0)}
-    </div>
+    </div>{/* Official Banners & Pamphlet Gallery Section */}``
   </div>
 </div>
 
@@ -511,7 +602,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Official Banners & Pamphlet Gallery Section */}
+     {/* Official Banners & Pamphlet Gallery Section */}
       <section id="gallery" style={{ padding: "5rem 6%", background: "#051329" }}>
         <div style={{ maxWidth: "1200px", margin: "auto" }}>
           
@@ -520,51 +611,65 @@ export default function App() {
               INSTITUTE HIGHLIGHTS & BANNERS
             </span>
             <h2 style={{ fontSize: "2.4rem", margin: "0.5rem 0" }}>Campus & Result Gallery</h2>
-            <p style={{ color: "#94a3b8" }}>Official posters, hoardings, and academic pamphlets of The Sky Tuition Classes</p>
+            <p style={{ color: "#94a3b8" }}>Official posters, hoardings, and academic materials of The Sky Tuition Classes</p>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "2rem", alignItems: "center" }}>
-            
-            {/* Admission Poster */}
-            <div className="glass-card" style={{ padding: "1.2rem", overflow: "hidden" }}>
-              <img
-                src="/poster-admission.jpg"
-                alt="Admission Open Poster 2026-27"
-                onError={(e) => { e.target.style.display = 'none'; }}
-                style={{ width: "100%", height: "280px", objectFit: "cover", borderRadius: "12px", border: "1px solid rgba(0, 180, 216, 0.3)" }}
-              />
-              <h4 style={{ marginTop: "1rem", color: "#fff", fontSize: "1.1rem" }}>Admissions Open 2026–27</h4>
-              <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginTop: "4px" }}>Std. 5 to 10 (All Subjects) & Std. 11-12 Commerce</p>
-            </div>
-
-            {/* Toppers Hoarding Banner */}
-            <div className="glass-card" style={{ padding: "1.2rem", overflow: "hidden" }}>
+          {/* Large Toppers Banner (Full Width Banner - No Crop) */}
+          <div className="glass-card" style={{ padding: "1.5rem", marginBottom: "2rem", overflow: "hidden" }}>
+            <div style={{ width: "100%", background: "#020914", borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(0, 180, 216, 0.3)", display: "flex", justifyContent: "center", alignItems: "center", padding: "10px" }}>
               <img
                 src="/banner-toppers.jpg"
                 alt="Sky Tuition Board Result Hoarding"
                 onError={(e) => { e.target.style.display = 'none'; }}
-                style={{ width: "100%", height: "280px", objectFit: "cover", borderRadius: "12px", border: "1px solid rgba(0, 180, 216, 0.3)" }}
+                style={{ width: "100%", height: "auto", maxHeight: "420px", objectFit: "contain", borderRadius: "8px" }}
               />
-              <h4 style={{ marginTop: "1rem", color: "#fff", fontSize: "1.1rem" }}>Official Result Hoarding</h4>
-              <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginTop: "4px" }}>GSEB Board Toppers with Certified Scores</p>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem", flexWrap: "wrap", gap: "10px" }}>
+              <div>
+                <h4 style={{ color: "#fff", fontSize: "1.2rem" }}>Official Board Achievers Hoarding Banner</h4>
+                <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginTop: "4px" }}>GSEB Board A1, A2 & B2 Grade Rankers List</p>
+              </div>
+              <span style={{ background: "rgba(0, 180, 216, 0.15)", color: "#38bdf8", padding: "6px 14px", borderRadius: "20px", fontSize: "0.8rem", fontWeight: 700 }}>
+                Verified Results ★
+              </span>
+            </div>
+          </div>
+
+          {/* 2-Column Grid for Poster & Visiting Card (No Crop) */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "2rem" }}>
+            
+            {/* Admission Poster */}
+            <div className="glass-card" style={{ padding: "1.5rem" }}>
+              <div style={{ width: "100%", height: "360px", background: "#020914", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", border: "1px solid rgba(0, 180, 216, 0.2)" }}>
+                <img
+                  src="/poster-admission.jpg"
+                  alt="Admission Open Poster 2026-27"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                  style={{ width: "100%", height: "100%", objectFit: "contain", padding: "8px" }}
+                />
+              </div>
+              <h4 style={{ marginTop: "1rem", color: "#fff", fontSize: "1.1rem" }}>Admissions Open 2026–27</h4>
+              <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginTop: "4px" }}>Std. 5 to 10 (All Subjects) & Std. 11-12 Commerce</p>
             </div>
 
-            {/* Visiting Card & Pamphlet */}
-            <div className="glass-card" style={{ padding: "1.2rem", overflow: "hidden" }}>
-              <img
-                src="/visiting-card.jpg"
-                alt="Visiting Card - Saqib Vidha"
-                onError={(e) => { e.target.style.display = 'none'; }}
-                style={{ width: "100%", height: "280px", objectFit: "cover", borderRadius: "12px", border: "1px solid rgba(0, 180, 216, 0.3)" }}
-              />
+            {/* Visiting Card */}
+            <div className="glass-card" style={{ padding: "1.5rem" }}>
+              <div style={{ width: "100%", height: "360px", background: "#020914", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", border: "1px solid rgba(0, 180, 216, 0.2)" }}>
+                <img
+                  src="/visiting-card.jpg"
+                  alt="Visiting Card - Saqib Vidha"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                  style={{ width: "100%", height: "100%", objectFit: "contain", padding: "8px" }}
+                />
+              </div>
               <h4 style={{ marginTop: "1rem", color: "#fff", fontSize: "1.1rem" }}>Director Visiting Card</h4>
-              <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginTop: "4px" }}>Official contact and institute coordinates</p>
+              <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginTop: "4px" }}>Saqib Vidha (BBA) • Contact & Branch Location</p>
             </div>
 
           </div>
 
         </div>
-      </section>
+      </section>  
 
       {/* Courses & Curriculum Section */}
       <section id="courses" style={{ padding: "5rem 6%", background: "#030b17" }}>
@@ -974,10 +1079,22 @@ export default function App() {
         </a>
       </div>
 
-      {/* Footer */}
-      <footer style={{ padding: "2.5rem 6% 5.5rem", textAlign: "center", borderTop: "1px solid rgba(0, 180, 216, 0.2)", color: "#64748b", fontSize: "0.85rem" }}>
-        © 2026 The Sky Tuition Classes. All Rights Reserved. • Sardarbag, Junagadh, Gujarat
-      </footer>
+ {/* Professional Footer with JD3learn Credits */}
+<footer style={{ 
+  padding: "2.5rem 6% 5.5rem", 
+  textAlign: "center", 
+  background: "#030b17", 
+  color: "#94a3b8", 
+  fontSize: "0.85rem",
+  borderTop: "1px solid rgba(0, 180, 216, 0.2)"
+}}>
+  <div style={{ marginBottom: "8px" }}>
+    © 2026 The Sky Tuition Classes. All Rights Reserved. • Sardarbag, Junagadh, Gujarat
+  </div>
+  <div style={{ fontSize: "0.8rem", color: "#64748b" }}>
+    Designed & Engineered by <span style={{ color: "#00d2ff", fontWeight: 700 }}>JD3learn</span>
+  </div>
+</footer> 
     </div>
   );
 }
